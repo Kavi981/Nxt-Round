@@ -20,7 +20,7 @@ const server = createServer(app);
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://your-app.vercel.app", // Replace with your actual Vercel domain
+  "https://nxt-round.vercel.app", // Added your actual Vercel frontend domain
   process.env.CORS_ORIGIN
 ].filter(Boolean);
 
