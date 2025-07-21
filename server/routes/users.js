@@ -165,6 +165,19 @@ router.get('/', adminAuth, async (req, res) => {
   }
 });
 
+// Add GET /:id route to fetch a user by their ID
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Promote user to admin (Admin only)
 router.put('/:id/promote', adminAuth, async (req, res) => {
   try {
@@ -195,6 +208,19 @@ router.put('/profile', auth, async (req, res) => {
       { new: true }
     ).select('-password');
 
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Add GET /profile route to return current user's profile
+router.get('/profile', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
