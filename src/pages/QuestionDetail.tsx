@@ -3,9 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
   ThumbsUp, 
-  MessageSquare, 
   Calendar, 
-  User, 
   Edit3, 
   Trash2,
   Building,

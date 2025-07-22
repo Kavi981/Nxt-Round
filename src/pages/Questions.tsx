@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Plus, Search, Filter, TrendingUp } from 'lucide-react';
+import { Plus, Search, TrendingUp } from 'lucide-react';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import QuestionCard from '../components/questions/QuestionCard';
@@ -33,7 +33,7 @@ interface Question {
 const Questions: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -89,16 +89,6 @@ const Questions: React.FC = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     fetchQuestions();
-  };
-
-  const updateSearchParams = (key: string, value: string) => {
-    const newParams = new URLSearchParams(searchParams);
-    if (value) {
-      newParams.set(key, value);
-    } else {
-      newParams.delete(key);
-    }
-    setSearchParams(newParams);
   };
 
   if (isLoading) {

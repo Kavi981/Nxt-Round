@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircle, User, Calendar, Edit3, Trash2, Save, X } from 'lucide-react';
+import { MessageCircle, Calendar, Edit3, Save, X, Trash2 } from 'lucide-react';
 import api from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 
