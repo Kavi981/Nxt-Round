@@ -30,7 +30,7 @@ interface QuestionCardProps {
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
-  const voteScore = question.votes.upvotes.length - question.votes.downvotes.length;
+  const voteScore = question.votes.upvotes.length;
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -101,7 +101,6 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
           {/* Author and Date */}
           <div className="flex items-center space-x-4 text-sm text-gray-500">
             <div className="flex items-center space-x-1">
-              {/* Remove avatar image, only show name */}
               <span>{question.author.name}</span>
             </div>
             <span>•</span>
@@ -114,11 +113,12 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
 
         {/* Vote Score */}
         <div className="flex flex-col items-center ml-6">
+          {/* In the UI, only show upvotes */}
           <div className="flex items-center space-x-1 text-sm">
             <ThumbsUp className="w-4 h-4 text-green-600" />
             <span className="font-medium text-gray-900">{voteScore}</span>
           </div>
-          <span className="text-xs text-gray-500">votes</span>
+          <span className="text-xs text-gray-500">upvotes</span>
         </div>
       </div>
     </div>

@@ -52,11 +52,11 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
     }
   };
 
-  const handleVoteAnswer = async (answerId: string, voteType: 'upvote' | 'downvote') => {
+  const handleVoteAnswer = async (answerId: string) => {
     if (!isAuthenticated) return;
 
     try {
-      const response = await api.post(`/answers/${answerId}/vote`, { voteType });
+      const response = await api.post(`/answers/${answerId}/vote`, { voteType: 'upvote' });
       onAnswerUpdate(answers.map(answer => 
         answer._id === answerId ? response.data : answer
       ));
@@ -69,7 +69,6 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
     if (!user) return null;
     const userId = user.id;
     if (answer.votes.upvotes.includes(userId)) return 'upvote';
-    if (answer.votes.downvotes.includes(userId)) return 'downvote';
     return null;
   };
 
@@ -168,7 +167,7 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
       ) : (
         <div className="space-y-6">
           {answers.map((answer) => {
-            const voteScore = answer.votes.upvotes.length - answer.votes.downvotes.length;
+            const voteScore = answer.votes.upvotes.length;
             const userVote = getUserVote(answer);
             const isExpanded = expandedAnswers.has(answer._id);
             const shouldTruncate = answer.content.length > 300;
@@ -208,15 +207,6 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2 text-sm text-gray-500">
-                        {answer.author.avatar ? (
-                          <img
-                            src={answer.author.avatar}
-                            alt={answer.author.name}
-                            className="w-5 h-5 rounded-full"
-                          />
-                        ) : (
-                          <User className="w-5 h-5" />
-                        )}
                         <span>{answer.author.name}</span>
                         <span>•</span>
                         <div className="flex items-center space-x-1">
@@ -264,7 +254,7 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
                   {/* Answer Voting */}
                   <div className="flex flex-col items-center ml-6 space-y-1">
                     <button
-                      onClick={() => handleVoteAnswer(answer._id, 'upvote')}
+                      onClick={() => handleVoteAnswer(answer._id)}
                       className={`p-1 rounded transition-colors ${
                         userVote === 'upvote'
                           ? 'bg-green-100 text-green-600'
@@ -277,17 +267,7 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
                     
                     <span className="text-sm font-medium text-gray-900">{voteScore}</span>
                     
-                    <button
-                      onClick={() => handleVoteAnswer(answer._id, 'downvote')}
-                      className={`p-1 rounded transition-colors ${
-                        userVote === 'downvote'
-                          ? 'bg-red-100 text-red-600'
-                          : 'text-gray-400 hover:text-red-600 hover:bg-red-50'
-                      }`}
-                      disabled={!isAuthenticated}
-                    >
-                      <ThumbsDown className="w-4 h-4" />
-                    </button>
+                    <span className="text-xs text-gray-500">upvotes</span>
                   </div>
                 </div>
               </div>

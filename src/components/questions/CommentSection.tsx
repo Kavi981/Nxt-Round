@@ -146,15 +146,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ questionId, comments, o
                     </p>
 
                     <div className="flex items-center space-x-2 text-sm text-gray-500">
-                      {comment.author.avatar ? (
-                        <img
-                          src={comment.author.avatar}
-                          alt={comment.author.name}
-                          className="w-4 h-4 rounded-full"
-                        />
-                      ) : (
-                        <User className="w-4 h-4" />
-                      )}
                       <span>{comment.author.name}</span>
                       <span>•</span>
                       <div className="flex items-center space-x-1">

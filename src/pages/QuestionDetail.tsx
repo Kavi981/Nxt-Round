@@ -3,7 +3,6 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
   ThumbsUp, 
-  ThumbsDown, 
   MessageSquare, 
   Calendar, 
   User, 
@@ -87,7 +86,7 @@ const QuestionDetail: React.FC = () => {
     difficulty: '',
     tags: [] as string[]
   });
-  const [userVote, setUserVote] = useState<'upvote' | 'downvote' | null>(null);
+  const [userVote, setUserVote] = useState<'upvote' | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -141,8 +140,6 @@ const QuestionDetail: React.FC = () => {
         const userId = user.id;
         if (question.votes.upvotes.includes(userId)) {
           setUserVote('upvote');
-        } else if (question.votes.downvotes.includes(userId)) {
-          setUserVote('downvote');
         } else {
           setUserVote(null);
         }
@@ -154,28 +151,21 @@ const QuestionDetail: React.FC = () => {
     }
   };
 
-  const handleVote = async (voteType: 'upvote' | 'downvote') => {
+  const handleVote = async () => {
     if (!isAuthenticated || !question) {
       return;
     }
 
     try {
-      const response = await api.post(`/questions/${question._id}/vote`, { voteType });
+      const response = await api.post(`/questions/${question._id}/vote`, { voteType: 'upvote' });
       setQuestion(response.data);
       
       // Update user vote state based on the response
       const userId = user?.id;
-      if (userId) {
-        const hasUpvote = response.data.votes.upvotes.includes(userId);
-        const hasDownvote = response.data.votes.downvotes.includes(userId);
-        
-        if (hasUpvote) {
-          setUserVote('upvote');
-        } else if (hasDownvote) {
-          setUserVote('downvote');
-        } else {
-          setUserVote(null);
-        }
+      if (userId && response.data.votes.upvotes.includes(userId)) {
+        setUserVote('upvote');
+      } else {
+        setUserVote(null);
       }
     } catch (error) {
       console.error('Error voting:', error);
@@ -281,7 +271,7 @@ const QuestionDetail: React.FC = () => {
     );
   }
 
-  const voteScore = question.votes.upvotes.length - question.votes.downvotes.length;
+  const voteScore = question.votes.upvotes.length;
   const canEdit = user && (user.id === question.author._id || user.role === 'admin');
 
   return (
@@ -366,16 +356,7 @@ const QuestionDetail: React.FC = () => {
               {/* Author and Date */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  {question.author.avatar ? (
-                    <img
-                      src={question.author.avatar}
-                      alt={question.author.name}
-                      className="w-6 h-6 rounded-full"
-                    />
-                  ) : (
-                    <User className="w-6 h-6" />
-                  )}
-                  <span>Asked by {question.author.name}</span>
+                  <span>Posted by {question.author.name}</span>
                   <span>•</span>
                   <div className="flex items-center space-x-1">
                     <Calendar className="w-4 h-4" />
@@ -422,7 +403,7 @@ const QuestionDetail: React.FC = () => {
             {/* Voting */}
             <div className="flex flex-col items-center ml-6 space-y-2">
               <button
-                onClick={() => handleVote('upvote')}
+                onClick={handleVote}
                 className={`p-2 rounded-full transition-colors ${
                   userVote === 'upvote'
                     ? 'bg-green-100 text-green-600'
@@ -434,18 +415,7 @@ const QuestionDetail: React.FC = () => {
               </button>
               
               <span className="font-bold text-lg text-gray-900">{voteScore}</span>
-              
-              <button
-                onClick={() => handleVote('downvote')}
-                className={`p-2 rounded-full transition-colors ${
-                  userVote === 'downvote'
-                    ? 'bg-red-100 text-red-600'
-                    : 'text-gray-400 hover:text-red-600 hover:bg-red-50'
-                }`}
-                disabled={!isAuthenticated}
-              >
-                <ThumbsDown className="w-5 h-5" />
-              </button>
+              <span className="text-xs text-gray-500">upvotes</span>
             </div>
           </div>
         </div>
