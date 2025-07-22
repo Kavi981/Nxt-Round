@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User, Edit3, Save, X, BarChart3, MessageSquare, Building, ThumbsUp, Calendar, ChevronDown, ChevronUp, Upload } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
+import { BACKEND_BASE_URL } from '../config';
 
 interface DashboardData {
   stats: {
@@ -166,7 +167,7 @@ const Profile: React.FC = () => {
             <div className="flex items-center space-x-4">
               {user.avatar ? (
                 <img
-                  src={user.avatar.startsWith('http') ? user.avatar : `http://localhost:5003${user.avatar}`}
+                  src={user.avatar.startsWith('http') ? user.avatar : `${BACKEND_BASE_URL}${user.avatar}`}
                   alt={user.name}
                   className="w-20 h-20 rounded-full border-4 border-white object-cover"
                 />
@@ -429,7 +430,7 @@ const Profile: React.FC = () => {
                   <div className="flex items-center space-x-4">
                     {user.avatar ? (
                       <img
-                        src={user.avatar.startsWith('http') ? user.avatar : `http://localhost:5003${user.avatar}`}
+                        src={user.avatar.startsWith('http') ? user.avatar : `${BACKEND_BASE_URL}${user.avatar}`}
                         alt={user.name}
                         className="w-16 h-16 rounded-full object-cover border border-gray-300"
                       />

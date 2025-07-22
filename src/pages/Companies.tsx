@@ -4,6 +4,7 @@ import { Building, Plus, Search, Filter, ExternalLink } from 'lucide-react';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import CreateCompanyModal from '../components/companies/CreateCompanyModal';
+import { BACKEND_BASE_URL } from '../config';
 
 interface Company {
   _id: string;
@@ -183,7 +184,7 @@ const Companies: React.FC = () => {
                     <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
                       {company.logo ? (
                         <img
-                          src={company.logo.startsWith('http') ? company.logo : `http://localhost:5003${company.logo}`}
+                          src={company.logo.startsWith('http') ? company.logo : `${BACKEND_BASE_URL}${company.logo}`}
                           alt={company.name}
                           className="w-8 h-8 rounded object-cover"
                           onError={(e) => {

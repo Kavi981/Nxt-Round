@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { User, LogOut, Search, Shield } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { BACKEND_BASE_URL } from '../../config';
 
 const Navbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -97,7 +98,7 @@ const Navbar: React.FC = () => {
                 >
                   {user?.avatar ? (
                     <img
-                      src={user.avatar.startsWith('http') ? user.avatar : `http://localhost:5003${user.avatar}`}
+                      src={user.avatar.startsWith('http') ? user.avatar : `${BACKEND_BASE_URL}${user.avatar}`}
                       alt={user.name}
                       className="w-8 h-8 rounded-full object-cover"
                     />
