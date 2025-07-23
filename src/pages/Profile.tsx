@@ -3,6 +3,7 @@ import { User, Edit3, Save, X, BarChart3, MessageSquare, Building, ThumbsUp, Cal
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import { BACKEND_BASE_URL } from '../config';
+import axios from 'axios';
 
 interface DashboardData {
   stats: {
@@ -22,6 +23,61 @@ interface DashboardData {
     answers: any[];
   };
 }
+
+type AvatarUploadProps = {
+  userId: string;
+  currentAvatar: string;
+  onAvatarChange?: (url: string) => void;
+};
+
+const AvatarUpload: React.FC<AvatarUploadProps> = ({ userId, currentAvatar, onAvatarChange }) => {
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string>(currentAvatar);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+      setPreview(URL.createObjectURL(e.target.files[0]));
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+    setLoading(true);
+    setError('');
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      formData.append('userId', userId);
+      const res = await axios.post('/api/users/upload-avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setPreview(res.data.url);
+      if (onAvatarChange) onAvatarChange(res.data.url);
+    } catch (err) {
+      setError('Upload failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <img
+        src={preview || 'https://res.cloudinary.com/dikqzl7sk/image/upload/v1710000000/default_avatar.png'}
+        alt="Profile Avatar"
+        style={{ width: 120, height: 120, borderRadius: '50%', objectFit: 'cover', marginBottom: 8 }}
+      />
+      <input type="file" accept="image/*" onChange={handleChange} />
+      <button onClick={handleUpload} disabled={loading || !file} style={{ marginLeft: 8 }}>
+        {loading ? 'Uploading...' : 'Upload Avatar'}
+      </button>
+      {error && <div style={{ color: 'red' }}>{error}</div>}
+    </div>
+  );
+};
 
 const Profile: React.FC = () => {
   const { user, updateProfile } = useAuth();
