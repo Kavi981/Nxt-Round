@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircle, Calendar, Edit3, Save, X, Trash2 } from 'lucide-react';
+import { MessageCircle, Calendar, Trash2 } from 'lucide-react';
 import api from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -24,8 +24,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ questionId, comments, o
   const { user, isAuthenticated } = useAuth();
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editingComment, setEditingComment] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState('');
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,31 +54,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ questionId, comments, o
     } catch (error) {
       console.error('Error deleting comment:', error);
     }
-  };
-
-  const handleEditComment = (comment: Comment) => {
-    setEditingComment(comment._id);
-    setEditForm(comment.content);
-  };
-
-  const handleSaveEdit = async (commentId: string) => {
-    if (!editForm.trim()) return;
-
-    try {
-      const response = await api.put(`/comments/${commentId}`, { content: editForm });
-      onCommentUpdate(comments.map(comment => 
-        comment._id === commentId ? response.data : comment
-      ));
-      setEditingComment(null);
-      setEditForm('');
-    } catch (error) {
-      console.error('Error updating comment:', error);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingComment(null);
-    setEditForm('');
   };
 
   return (
@@ -134,15 +107,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ questionId, comments, o
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <p className="text-gray-700 mb-3 whitespace-pre-wrap">
-                      {editingComment === comment._id ? (
-                        <textarea
-                          value={editForm}
-                          onChange={(e) => setEditForm(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                        />
-                      ) : (
-                        comment.content
-                      )}
+                      {comment.content}
                     </p>
 
                     <div className="flex items-center space-x-2 text-sm text-gray-500">
@@ -157,29 +122,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ questionId, comments, o
 
                   {canEdit && (
                     <div className="flex items-center space-x-2 ml-4">
-                      {editingComment === comment._id ? (
-                        <>
-                          <button 
-                            onClick={() => handleSaveEdit(comment._id)}
-                            className="text-green-600 hover:text-green-700 p-1"
-                          >
-                            <Save className="w-3 h-3" />
-                          </button>
-                          <button 
-                            onClick={handleCancelEdit}
-                            className="text-gray-600 hover:text-gray-700 p-1"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </>
-                      ) : (
-                        <button 
-                          onClick={() => handleEditComment(comment)}
-                          className="text-blue-600 hover:text-blue-700 p-1"
-                        >
-                          <Edit3 className="w-3 h-3" />
-                        </button>
-                      )}
                       <button 
                         onClick={() => handleDeleteComment(comment._id)}
                         className="text-red-600 hover:text-red-700 p-1"

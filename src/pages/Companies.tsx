@@ -39,6 +39,18 @@ const Companies: React.FC = () => {
     filterCompanies();
   }, [companies, searchQuery, selectedIndustry]);
 
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading) {
+      window.scrollTo(0, 0);
+    }
+  }, [isLoading]);
+
   const fetchCompanies = async () => {
     try {
       const response = await api.get('/companies');

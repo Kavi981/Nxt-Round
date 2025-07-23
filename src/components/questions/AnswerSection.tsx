@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, ThumbsUp, ThumbsDown, Edit3, Trash2, User, Calendar, Save, X } from 'lucide-react';
+import { MessageSquare, ThumbsUp, Trash2, Calendar } from 'lucide-react';
 import api from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -29,8 +29,6 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
   const [newAnswer, setNewAnswer] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [expandedAnswers, setExpandedAnswers] = useState<Set<string>>(new Set());
-  const [editingAnswer, setEditingAnswer] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState('');
 
   const handleSubmitAnswer = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,31 +83,6 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
   const truncateContent = (content: string, maxLength: number = 300) => {
     if (content.length <= maxLength) return content;
     return content.substring(0, maxLength) + '...';
-  };
-
-  const handleEditAnswer = (answer: Answer) => {
-    setEditingAnswer(answer._id);
-    setEditForm(answer.content);
-  };
-
-  const handleSaveEdit = async (answerId: string) => {
-    if (!editForm.trim()) return;
-
-    try {
-      const response = await api.put(`/answers/${answerId}`, { content: editForm });
-      onAnswerUpdate(answers.map(answer => 
-        answer._id === answerId ? response.data : answer
-      ));
-      setEditingAnswer(null);
-      setEditForm('');
-    } catch (error) {
-      console.error('Error updating answer:', error);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingAnswer(null);
-    setEditForm('');
   };
 
   const handleDeleteAnswer = async (answerId: string) => {
@@ -177,33 +150,22 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
               <div key={answer._id} className="border-l-4 border-blue-100 pl-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    {editingAnswer === answer._id ? (
-                      <div className="mb-4">
-                        <textarea
-                          value={editForm}
-                          onChange={(e) => setEditForm(e.target.value)}
-                          rows={4}
-                          className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                        />
-                      </div>
-                    ) : (
-                      <div className="prose max-w-none mb-4">
-                        <p className="text-gray-700 whitespace-pre-wrap">
-                          {shouldTruncate && !isExpanded 
-                            ? truncateContent(answer.content)
-                            : answer.content
-                          }
-                        </p>
-                        {shouldTruncate && (
-                          <button
-                            onClick={() => toggleExpanded(answer._id)}
-                            className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-2"
-                          >
-                            {isExpanded ? 'Read less' : 'Read more'}
-                          </button>
-                        )}
-                      </div>
-                    )}
+                    <div className="prose max-w-none mb-4">
+                      <p className="text-gray-700 whitespace-pre-wrap">
+                        {shouldTruncate && !isExpanded 
+                          ? truncateContent(answer.content)
+                          : answer.content
+                        }
+                      </p>
+                      {shouldTruncate && (
+                        <button
+                          onClick={() => toggleExpanded(answer._id)}
+                          className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-2"
+                        >
+                          {isExpanded ? 'Read less' : 'Read more'}
+                        </button>
+                      )}
+                    </div>
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2 text-sm text-gray-500">
@@ -217,29 +179,6 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
 
                       {canEdit && (
                         <div className="flex items-center space-x-2">
-                          {editingAnswer === answer._id ? (
-                            <>
-                              <button 
-                                onClick={() => handleSaveEdit(answer._id)}
-                                className="text-green-600 hover:text-green-700 p-1"
-                              >
-                                <Save className="w-4 h-4" />
-                              </button>
-                              <button 
-                                onClick={handleCancelEdit}
-                                className="text-gray-600 hover:text-gray-700 p-1"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </>
-                          ) : (
-                            <button 
-                              onClick={() => handleEditAnswer(answer)}
-                              className="text-blue-600 hover:text-blue-700 p-1"
-                            >
-                              <Edit3 className="w-4 h-4" />
-                            </button>
-                          )}
                           <button 
                             onClick={() => handleDeleteAnswer(answer._id)}
                             className="text-red-600 hover:text-red-700 p-1"

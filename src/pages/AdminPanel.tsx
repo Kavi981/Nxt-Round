@@ -32,6 +32,7 @@ interface Question {
     name: string;
   };
   author: {
+    _id: string;
     name: string;
   };
   category: string;
@@ -521,127 +522,134 @@ const AdminPanel: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {questions.map((question) => (
-                <tr key={question._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div className="min-w-0">
+              {questions.map((question) => {
+                const canEdit = users.find(user => user._id === question.author._id) || users.find(user => user.role === 'admin');
+                return (
+                  <tr key={question._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div className="min-w-0">
+                        {editingQuestion === question._id ? (
+                          <div className="space-y-2">
+                            <input
+                              type="text"
+                              value={editQuestionForm.title}
+                              onChange={(e) => setEditQuestionForm(prev => ({ ...prev, title: e.target.value }))}
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Question title"
+                            />
+                            <textarea
+                              value={editQuestionForm.content}
+                              onChange={(e) => setEditQuestionForm(prev => ({ ...prev, content: e.target.value }))}
+                              rows={2}
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                              placeholder="Question content"
+                            />
+                          </div>
+                        ) : (
+                          <>
+                            <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                              {question.title}
+                            </div>
+                            <div className="text-sm text-gray-500 truncate max-w-xs">
+                              {question.content}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {question.company.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {editingQuestion === question._id ? (
-                        <div className="space-y-2">
-                          <input
-                            type="text"
-                            value={editQuestionForm.title}
-                            onChange={(e) => setEditQuestionForm(prev => ({ ...prev, title: e.target.value }))}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="Question title"
-                          />
-                          <textarea
-                            value={editQuestionForm.content}
-                            onChange={(e) => setEditQuestionForm(prev => ({ ...prev, content: e.target.value }))}
-                            rows={2}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                            placeholder="Question content"
-                          />
+                        <div className="min-w-0 w-20">
+                          <select
+                            value={editQuestionForm.category}
+                            onChange={(e) => setEditQuestionForm(prev => ({ ...prev, category: e.target.value }))}
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          >
+                            <option value="Technical">Technical</option>
+                            <option value="HR">HR</option>
+                            <option value="Behavioral">Behavioral</option>
+                            <option value="Case Study">Case Study</option>
+                            <option value="Puzzle">Puzzle</option>
+                          </select>
                         </div>
                       ) : (
-                        <>
-                          <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
-                            {question.title}
-                          </div>
-                          <div className="text-sm text-gray-500 truncate max-w-xs">
-                            {question.content}
-                          </div>
-                        </>
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                          {question.category}
+                        </span>
                       )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {question.company.name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {editingQuestion === question._id ? (
-                      <div className="min-w-0 w-20">
-                        <select
-                          value={editQuestionForm.category}
-                          onChange={(e) => setEditQuestionForm(prev => ({ ...prev, category: e.target.value }))}
-                          className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                          <option value="Technical">Technical</option>
-                          <option value="HR">HR</option>
-                          <option value="Behavioral">Behavioral</option>
-                          <option value="Case Study">Case Study</option>
-                          <option value="Puzzle">Puzzle</option>
-                        </select>
-                      </div>
-                    ) : (
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {question.category}
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {question.author.name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {editingQuestion === question._id ? (
-                      <div className="min-w-0 w-20">
-                        <select
-                          value={editQuestionForm.difficulty}
-                          onChange={(e) => setEditQuestionForm(prev => ({ ...prev, difficulty: e.target.value }))}
-                          className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                          <option value="Easy">Easy</option>
-                          <option value="Medium">Medium</option>
-                          <option value="Hard">Hard</option>
-                        </select>
-                      </div>
-                    ) : (
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        question.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
-                        question.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {question.difficulty}
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {new Date(question.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end space-x-2">
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {question.author.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {editingQuestion === question._id ? (
-                        <>
-                          <button 
-                            onClick={() => handleSaveQuestionEdit(question._id)}
-                            className="text-green-600 hover:text-green-700 p-1"
+                        <div className="min-w-0 w-20">
+                          <select
+                            value={editQuestionForm.difficulty}
+                            onChange={(e) => setEditQuestionForm(prev => ({ ...prev, difficulty: e.target.value }))}
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           >
-                            <Save className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={handleCancelQuestionEdit}
-                            className="text-gray-600 hover:text-gray-700 p-1"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </>
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
+                          </select>
+                        </div>
                       ) : (
-                        <button 
-                          onClick={() => handleEditQuestion(question)}
-                          className="text-blue-600 hover:text-blue-700 p-1"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                        </button>
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          question.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
+                          question.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-red-100 text-red-800'
+                        }`}>
+                          {question.difficulty}
+                        </span>
                       )}
-                      <button 
-                        onClick={() => deleteQuestion(question._id)}
-                        className="text-red-600 hover:text-red-700 p-1"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {new Date(question.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center justify-end space-x-2">
+                        {editingQuestion === question._id ? (
+                          <>
+                            <button 
+                              onClick={() => handleSaveQuestionEdit(question._id)}
+                              className="text-green-600 hover:text-green-700 p-1"
+                            >
+                              <Save className="w-4 h-4" />
+                            </button>
+                            <button 
+                              onClick={handleCancelQuestionEdit}
+                              className="text-gray-600 hover:text-gray-700 p-1"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            {canEdit && (
+                              <button 
+                                onClick={() => handleEditQuestion(question)}
+                                className="text-blue-600 hover:text-blue-700 p-1"
+                              >
+                                <Edit3 className="w-4 h-4" />
+                              </button>
+                            )}
+                            <button 
+                              onClick={() => deleteQuestion(question._id)}
+                              className="text-red-600 hover:text-red-700 p-1"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
