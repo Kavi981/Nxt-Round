@@ -49,9 +49,9 @@ router.post('/upload/avatar', auth, avatarUpload.single('avatar'), async (req, r
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
-
-    // Return the file URL
     const fileUrl = `/uploads/avatars/${req.file.filename}`;
+    // Save the avatar URL to the user's profile
+    await User.findByIdAndUpdate(req.user._id, { avatar: fileUrl });
     res.json({ url: fileUrl });
   } catch (error) {
     console.error('Error uploading avatar:', error);

@@ -168,6 +168,24 @@ router.put('/:id', adminAuth, async (req, res) => {
   }
 });
 
+// Update company logo after upload
+router.put('/update-logo/:id', auth, async (req, res) => {
+  try {
+    const { logo } = req.body;
+    const company = await Company.findByIdAndUpdate(
+      req.params.id,
+      { logo },
+      { new: true }
+    );
+    if (!company) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+    res.json(company);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Delete company (Admin only)
 router.delete('/:id', adminAuth, async (req, res) => {
   try {
