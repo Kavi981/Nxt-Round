@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
           {/* Left Section - Platform Overview */}
           <div className="col-span-1">
             <div className="flex items-center space-x-2 mb-4">
-              <img src="/nxt_round.png" alt="Nxt Round Logo" style={{ height: 32 }} />
+              <img src="nxt_round.png" alt="Nxt Round Logo" style={{ height: 32 }} />
               <span className="text-xl font-bold text-white">Nxt Round</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
