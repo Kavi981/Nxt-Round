@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import Company from '../models/Company.js';
 import { auth, adminAuth } from '../middleware/auth.js';
+import cloudinary from '../config/cloudinary.js';
 
 const router = express.Router();
 
@@ -39,16 +40,27 @@ const upload = multer({
   }
 });
 
-// Upload logo (no auth required for testing)
-router.post('/upload/logo', upload.single('logo'), async (req, res) => {
+// Use memory storage for Multer
+const logoUpload = multer({ storage: multer.memoryStorage() });
+
+// Upload logo to Cloudinary
+router.post('/upload/logo', logoUpload.single('logo'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
-
-    // Return the file URL
-    const fileUrl = `/uploads/logos/${req.file.filename}`;
-    res.json({ url: fileUrl });
+    // Upload to Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        { folder: 'company_logos' },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      ).end(req.file.buffer);
+    });
+    // Return the Cloudinary URL
+    res.json({ url: result.secure_url });
   } catch (error) {
     console.error('Error uploading logo:', error);
     res.status(500).json({ message: 'Error uploading file' });
