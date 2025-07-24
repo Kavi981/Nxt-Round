@@ -25,29 +25,23 @@ interface Question {
 
 const Home: React.FC = () => {
   const [topQuestions, setTopQuestions] = useState<Question[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState<{ users: number; companies: number; questions: number } | null>(null);
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(true);
 
   useEffect(() => {
-    const fetchTopQuestions = async () => {
-      try {
-        const response = await api.get('/questions/top-voted');
-        setTopQuestions(response.data);
-      } catch (error) {
-        console.error('Error fetching top questions:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTopQuestions();
+    setIsLoadingQuestions(true);
+    Promise.all([
+      api.get('/stats'),
+      api.get('/questions/top-voted')
+    ]).then(([statsRes, questionsRes]) => {
+      setStats(statsRes.data);
+      setTopQuestions(questionsRes.data);
+    }).catch((error) => {
+      console.error('Error fetching home data:', error);
+    }).finally(() => {
+      setIsLoadingQuestions(false);
+    });
   }, []);
-
-  const stats = [
-    { icon: Users, label: 'Active Users', value: '10K+', color: 'text-blue-600' },
-    { icon: Building, label: 'Companies', value: '500+', color: 'text-emerald-600' },
-    { icon: MessageSquare, label: 'Questions', value: '25K+', color: 'text-purple-600' },
-    { icon: TrendingUp, label: 'Success Rate', value: '85%', color: 'text-orange-600' }
-  ];
 
   return (
     <div className="min-h-screen">
@@ -88,15 +82,38 @@ const Home: React.FC = () => {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4`}>
-                  <stat.icon className={`w-8 h-8 ${stat.color}`} />
+            {stats && (
+              <>
+                <div className="text-center">
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4`}>
+                    <Users className={`w-8 h-8 text-blue-600`} />
+                  </div>
+                  <div className="text-3xl font-bold text-gray-900 mb-2">{stats.users}</div>
+                  <div className="text-gray-600">Active Users</div>
                 </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
-                <div className="text-gray-600">{stat.label}</div>
-              </div>
-            ))}
+                <div className="text-center">
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4`}>
+                    <Building className={`w-8 h-8 text-emerald-600`} />
+                  </div>
+                  <div className="text-3xl font-bold text-gray-900 mb-2">{stats.companies}</div>
+                  <div className="text-gray-600">Companies</div>
+                </div>
+                <div className="text-center">
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4`}>
+                    <MessageSquare className={`w-8 h-8 text-purple-600`} />
+                  </div>
+                  <div className="text-3xl font-bold text-gray-900 mb-2">{stats.questions}</div>
+                  <div className="text-gray-600">Questions</div>
+                </div>
+                <div className="text-center">
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4`}>
+                    <TrendingUp className={`w-8 h-8 text-orange-600`} />
+                  </div>
+                  <div className="text-3xl font-bold text-gray-900 mb-2">85%</div>
+                  <div className="text-gray-600">Success Rate</div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -165,7 +182,7 @@ const Home: React.FC = () => {
             </Link>
           </div>
 
-          {isLoading ? (
+          {isLoadingQuestions ? (
             <div className="flex justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>

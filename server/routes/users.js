@@ -154,7 +154,7 @@ router.get('/dashboard', auth, async (req, res) => {
 });
 
 // Get all users (Admin only)
-router.get('/', adminAuth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const users = await User.find().select('-password');
     res.json(users);

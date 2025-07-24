@@ -10,6 +10,7 @@ import companyRoutes from './routes/companies.js';
 import questionRoutes from './routes/questions.js';
 import answerRoutes from './routes/answers.js';
 import commentRoutes from './routes/comments.js';
+import statsRoutes from './routes/stats.js';
 
 dotenv.config();
 
@@ -64,6 +65,7 @@ app.use('/api/companies', companyRoutes);
 app.use('/api/questions', questionRoutes);
 app.use('/api/answers', answerRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/stats', statsRoutes);
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
