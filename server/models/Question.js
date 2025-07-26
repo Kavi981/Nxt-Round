@@ -21,7 +21,7 @@ const questionSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['Technical', 'HR', 'Behavioral', 'Case Study', 'Puzzle'],
+    enum: ['Aptitude', 'Coding', 'Technical', 'HR', 'Behavioral'],
     default: 'Technical'
   },
   difficulty: {

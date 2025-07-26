@@ -568,11 +568,11 @@ const AdminPanel: React.FC = () => {
                             onChange={(e) => setEditQuestionForm(prev => ({ ...prev, category: e.target.value }))}
                             className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           >
+                            <option value="Aptitude">Aptitude</option>
+                            <option value="Coding">Coding</option>
                             <option value="Technical">Technical</option>
                             <option value="HR">HR</option>
                             <option value="Behavioral">Behavioral</option>
-                            <option value="Case Study">Case Study</option>
-                            <option value="Puzzle">Puzzle</option>
                           </select>
                         </div>
                       ) : (
