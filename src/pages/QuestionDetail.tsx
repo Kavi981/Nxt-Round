@@ -339,7 +339,7 @@ const QuestionDetail: React.FC = () => {
               )}
 
               {/* Tags */}
-              {question.tags.length > 0 && (
+              {Array.isArray(question.tags) && question.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-4">
                   {question.tags.map((tag, index) => (
                     <span 

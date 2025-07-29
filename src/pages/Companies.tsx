@@ -114,7 +114,7 @@ const Companies: React.FC = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Companies</h1>
             <p className="text-gray-600">
-              Explore interview experiences from {companies.length} companies across various industries
+              Explore interview experiences from {Array.isArray(companies) ? companies.length : 0} companies across various industries
             </p>
           </div>
           {isAuthenticated && (
@@ -157,7 +157,7 @@ const Companies: React.FC = () => {
         </div>
 
         {/* Companies Grid */}
-        {filteredCompanies.length === 0 ? (
+        {Array.isArray(filteredCompanies) && filteredCompanies.length === 0 ? (
           <div className="text-center py-12">
             <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No companies found</h3>
@@ -170,7 +170,7 @@ const Companies: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCompanies.map((company) => (
+            {(Array.isArray(filteredCompanies) ? filteredCompanies : []).map((company) => (
               <div
                 key={company._id}
                 className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 relative"

@@ -248,7 +248,7 @@ const Profile: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <h3 className="font-semibold text-gray-900 mb-3">Recent Questions</h3>
-                        {dashboardData.recentActivity.questions.length > 0 ? (
+                        {Array.isArray(dashboardData.recentActivity.questions) && dashboardData.recentActivity.questions.length > 0 ? (
                           <div className="space-y-2">
                             {dashboardData.recentActivity.questions.map((question: any) => (
                               <div key={question._id} className="text-sm">
@@ -268,7 +268,7 @@ const Profile: React.FC = () => {
 
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <h3 className="font-semibold text-gray-900 mb-3">Recent Answers</h3>
-                        {dashboardData.recentActivity.answers.length > 0 ? (
+                        {Array.isArray(dashboardData.recentActivity.answers) && dashboardData.recentActivity.answers.length > 0 ? (
                           <div className="space-y-2">
                             {dashboardData.recentActivity.answers.map((answer: any) => (
                               <div key={answer._id} className="text-sm">
@@ -291,7 +291,7 @@ const Profile: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <h3 className="font-semibold text-gray-900 mb-3">Top Voted Questions</h3>
-                        {dashboardData.topContent.questions.length > 0 ? (
+                        {Array.isArray(dashboardData.topContent.questions) && dashboardData.topContent.questions.length > 0 ? (
                           <div className="space-y-2">
                             {dashboardData.topContent.questions.map((question: any) => (
                               <div key={question._id} className="text-sm">
@@ -299,7 +299,7 @@ const Profile: React.FC = () => {
                                 <div className="text-gray-500">{question.company?.name}</div>
                                 <div className="text-xs text-gray-400">
                                   <ThumbsUp className="w-3 h-3 inline mr-1" />
-                                  {question.votes.upvotes.length} upvotes
+                                  {question.votes && Array.isArray(question.votes.upvotes) ? question.votes.upvotes.length : 0} upvotes
                                 </div>
                               </div>
                             ))}
@@ -311,7 +311,7 @@ const Profile: React.FC = () => {
 
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <h3 className="font-semibold text-gray-900 mb-3">Top Voted Answers</h3>
-                        {dashboardData.topContent.answers.length > 0 ? (
+                        {Array.isArray(dashboardData.topContent.answers) && dashboardData.topContent.answers.length > 0 ? (
                           <div className="space-y-2">
                             {dashboardData.topContent.answers.map((answer: any) => (
                               <div key={answer._id} className="text-sm">
@@ -319,7 +319,7 @@ const Profile: React.FC = () => {
                                 <div className="text-gray-500 line-clamp-2">{answer.content}</div>
                                 <div className="text-xs text-gray-400">
                                   <ThumbsUp className="w-3 h-3 inline mr-1" />
-                                  {answer.votes.upvotes.length} upvotes
+                                  {answer.votes && Array.isArray(answer.votes.upvotes) ? answer.votes.upvotes.length : 0} upvotes
                                 </div>
                               </div>
                             ))}
