@@ -570,8 +570,9 @@ const AdminPanel: React.FC = () => {
                           >
                             <option value="Aptitude">Aptitude</option>
                             <option value="Coding">Coding</option>
-                            <option value="Technical">Technical</option>
-                            <option value="HR">HR</option>
+                            <option value="Technical MCQs">Technical MCQs</option>
+                            <option value="Technical HR">Technical HR</option>
+                            <option value="General HR">General HR</option>
                             <option value="Behavioral">Behavioral</option>
                           </select>
                         </div>

@@ -43,7 +43,7 @@ const Questions: React.FC = () => {
 
   const { isAuthenticated } = useAuth();
 
-  const categories = ['', 'Aptitude', 'Coding', 'Technical', 'HR', 'Behavioral'];
+  const categories = ['', 'Aptitude', 'Coding', 'Technical MCQs', 'Technical HR', 'General HR', 'Behavioral'];
   const difficulties = ['', 'Easy', 'Medium', 'Hard'];
   const sortOptions = [
     { value: 'recent', label: 'Most Recent' },

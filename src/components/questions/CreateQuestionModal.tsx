@@ -31,7 +31,7 @@ const CreateQuestionModal: React.FC<CreateQuestionModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const categories = ['Aptitude', 'Coding', 'Technical', 'HR', 'Behavioral'];
+  const categories = ['Aptitude', 'Coding', 'Technical MCQs', 'Technical HR', 'General HR', 'Behavioral'];
   const difficulties = ['Easy', 'Medium', 'Hard'];
 
   useEffect(() => {

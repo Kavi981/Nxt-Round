@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: summa-backend
+    name: nxt-round-backend
     env: node
     buildCommand: cd server && npm install
     startCommand: cd server && node index.js
