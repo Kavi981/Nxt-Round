@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
     }
 
     const questions = await Question.find(query)
-      .select('title company category createdAt difficulty')
+      .select('title content tags company category createdAt difficulty votes')
       .populate('company', 'name industry')
       .populate('author', 'name avatar')
       .sort(sortQuery)
