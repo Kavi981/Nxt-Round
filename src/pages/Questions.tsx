@@ -116,7 +116,7 @@ const Questions: React.FC = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Interview Questions</h1>
             <p className="text-gray-600">
-              {questions.length} questions from the community
+              {Array.isArray(questions) ? questions.length : 0} questions from the community
             </p>
           </div>
           {isAuthenticated && (

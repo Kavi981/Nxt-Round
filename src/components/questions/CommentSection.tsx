@@ -60,7 +60,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ questionId, comments, o
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
         <MessageCircle className="w-5 h-5 mr-2" />
-        Discussion ({comments.length})
+        Discussion ({Array.isArray(comments) ? comments.length : 0})
       </h2>
 
       {/* Comment Form */}
@@ -92,7 +92,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ questionId, comments, o
       )}
 
       {/* Comments List */}
-      {comments.length === 0 ? (
+      {Array.isArray(comments) && comments.length === 0 ? (
         <div className="text-center py-8">
           <MessageCircle className="w-12 h-12 text-gray-400 mx-auto mb-3" />
           <p className="text-gray-600">No comments yet. Start the discussion!</p>

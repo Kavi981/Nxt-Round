@@ -100,7 +100,7 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
       <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
         <MessageSquare className="w-5 h-5 mr-2" />
-        Answers ({answers.length})
+        Answers ({Array.isArray(answers) ? answers.length : 0})
       </h2>
 
       {/* Answer Form */}
@@ -132,7 +132,7 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
       )}
 
       {/* Answers List */}
-      {answers.length === 0 ? (
+      {Array.isArray(answers) && answers.length === 0 ? (
         <div className="text-center py-8">
           <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-3" />
           <p className="text-gray-600">No answers yet. Be the first to share your experience!</p>

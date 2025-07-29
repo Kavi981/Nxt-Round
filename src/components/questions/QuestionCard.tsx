@@ -86,7 +86,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
           </p>
 
           {/* Tags */}
-          {question.tags.length > 0 && (
+          {Array.isArray(question.tags) && question.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-4">
               {question.tags.map((tag, index) => (
                 <span 
