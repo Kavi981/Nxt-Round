@@ -33,14 +33,15 @@ router.get('/', async (req, res) => {
     }
 
     const questions = await Question.find(query)
+      .select('title company category createdAt difficulty')
       .populate('company', 'name industry')
       .populate('author', 'name avatar')
       .sort(sortQuery)
-      .limit(20);
+      .limit(50);
 
     res.json(questions);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message || 'Server error' });
   }
 });
 
@@ -69,7 +70,7 @@ router.get('/top-voted', async (req, res) => {
 
     res.json(questions);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message || 'Server error' });
   }
 });
 
@@ -94,7 +95,7 @@ router.get('/:id', async (req, res) => {
 
     res.json({ question, answers, comments });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message || 'Server error' });
   }
 });
 
@@ -122,7 +123,7 @@ router.post('/', auth, async (req, res) => {
     req.io.emit('question-created', question);
     res.status(201).json(question);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message || 'Server error' });
   }
 });
 
@@ -153,7 +154,7 @@ router.put('/:id', auth, async (req, res) => {
     req.io.to(`question-${req.params.id}`).emit('question-updated', updatedQuestion);
     res.json(updatedQuestion);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message || 'Server error' });
   }
 });
 
@@ -199,7 +200,7 @@ router.post('/:id/vote', auth, async (req, res) => {
     res.json(question);
   } catch (error) {
     console.error('Vote error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message || 'Server error' });
   }
 });
 
@@ -223,7 +224,7 @@ router.delete('/:id', auth, async (req, res) => {
     req.io.emit('question-deleted', req.params.id);
     res.json({ message: 'Question deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message || 'Server error' });
   }
 });
 

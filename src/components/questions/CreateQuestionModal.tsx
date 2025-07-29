@@ -24,7 +24,7 @@ const CreateQuestionModal: React.FC<CreateQuestionModalProps> = ({
     title: '',
     content: '',
     company: preselectedCompany || '',
-    category: 'Technical',
+    category: 'Technical HR',
     difficulty: 'Medium',
     tags: ''
   });
