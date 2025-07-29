@@ -136,7 +136,7 @@ const QuestionDetail: React.FC = () => {
       // Check user's vote status
       if (user && question) {
         const userId = user.id;
-        if (question.votes.upvotes.includes(userId)) {
+        if (question.votes && question.votes.upvotes && question.votes.upvotes.includes(userId)) {
           setUserVote('upvote');
         } else {
           setUserVote(null);
@@ -160,7 +160,7 @@ const QuestionDetail: React.FC = () => {
       
       // Update user vote state based on the response
       const userId = user?.id;
-      if (userId && response.data.votes.upvotes.includes(userId)) {
+      if (userId && response.data.votes && response.data.votes.upvotes && response.data.votes.upvotes.includes(userId)) {
         setUserVote('upvote');
       } else {
         setUserVote(null);
@@ -270,7 +270,7 @@ const QuestionDetail: React.FC = () => {
     );
   }
 
-  const voteScore = question.votes.upvotes.length;
+  const voteScore = question.votes && Array.isArray(question.votes.upvotes) ? question.votes.upvotes.length : 0;
   const canEdit = user && (user.id === question.author._id || user.role === 'admin');
 
   return (

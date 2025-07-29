@@ -30,7 +30,7 @@ interface QuestionCardProps {
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
-  const voteScore = question.votes.upvotes.length;
+  const voteScore = question.votes && Array.isArray(question.votes.upvotes) ? question.votes.upvotes.length : 0;
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
