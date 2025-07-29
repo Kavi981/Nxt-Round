@@ -66,7 +66,7 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
   const getUserVote = (answer: Answer) => {
     if (!user) return null;
     const userId = user.id;
-    if (answer.votes.upvotes.includes(userId)) return 'upvote';
+    if (answer.votes && Array.isArray(answer.votes.upvotes) && answer.votes.upvotes.includes(userId)) return 'upvote';
     return null;
   };
 
@@ -140,7 +140,7 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
       ) : (
         <div className="space-y-6">
           {answers.map((answer) => {
-            const voteScore = answer.votes.upvotes.length;
+            const voteScore = answer.votes && Array.isArray(answer.votes.upvotes) ? answer.votes.upvotes.length : 0;
             const userVote = getUserVote(answer);
             const isExpanded = expandedAnswers.has(answer._id);
             const shouldTruncate = answer.content.length > 300;
