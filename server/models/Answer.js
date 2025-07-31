@@ -19,18 +19,25 @@ const answerSchema = new mongoose.Schema({
     upvotes: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
-    }],
-    downvotes: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
     }]
   }
 }, {
   timestamps: true
 });
 
+// Initialize votes arrays if they don't exist
+answerSchema.pre('save', function(next) {
+  if (!this.votes) {
+    this.votes = { upvotes: [] };
+  }
+  if (!this.votes.upvotes) {
+    this.votes.upvotes = [];
+  }
+  next();
+});
+
 answerSchema.virtual('voteScore').get(function() {
-  return this.votes.upvotes.length - this.votes.downvotes.length;
+  return this.votes.upvotes.length;
 });
 
 export default mongoose.model('Answer', answerSchema);

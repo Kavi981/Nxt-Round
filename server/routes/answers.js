@@ -35,26 +35,15 @@ router.post('/:id/vote', auth, async (req, res) => {
       return res.status(404).json({ message: 'Answer not found' });
     }
 
-    const userId = req.user._id.toString();
-    const upvoteIndex = answer.votes.upvotes.findIndex(id => id.toString() === userId);
-    const downvoteIndex = answer.votes.downvotes.findIndex(id => id.toString() === userId);
+    const userId = req.user._id;
+    const upvoteIndex = answer.votes.upvotes.findIndex(id => id.toString() === userId.toString());
 
     // If user is voting the same way, remove the vote (toggle)
     if (voteType === 'upvote' && upvoteIndex > -1) {
       answer.votes.upvotes.splice(upvoteIndex, 1);
-    } else if (voteType === 'downvote' && downvoteIndex > -1) {
-      answer.votes.downvotes.splice(downvoteIndex, 1);
     } else {
-      // Remove existing votes first
-      if (upvoteIndex > -1) answer.votes.upvotes.splice(upvoteIndex, 1);
-      if (downvoteIndex > -1) answer.votes.downvotes.splice(downvoteIndex, 1);
-
       // Add new vote
-      if (voteType === 'upvote') {
-        answer.votes.upvotes.push(req.user._id);
-      } else if (voteType === 'downvote') {
-        answer.votes.downvotes.push(req.user._id);
-      }
+      answer.votes.upvotes.push(req.user._id);
     }
 
     await answer.save();

@@ -13,7 +13,6 @@ interface Answer {
   };
   votes: {
     upvotes: string[];
-    downvotes: string[];
   };
   createdAt: string;
 }
