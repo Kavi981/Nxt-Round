@@ -21,8 +21,10 @@ const server = createServer(app);
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://nxtround.tech", // Corrected: no trailing slash
-  "https://nxtround.tech/",// Corrected: no trailing slash
+  "https://nxtround.tech",
+  "https://nxtround.tech/",
+  "https://nxt-round.onrender.com",
+  "https://nxt-round.vercel.app",
   process.env.CORS_ORIGIN
 ].filter(Boolean);
 
@@ -31,7 +33,11 @@ const io = new Server(server, {
     origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
-  }
+  },
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  transports: ['websocket', 'polling'],
+  allowEIO3: true
 });
 
 // Connect to MongoDB
@@ -44,6 +50,12 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Add compression for better performance
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes cache
+  next();
+});
 
 // Serve static files for uploaded images
 app.use('/uploads', express.static('uploads'));
@@ -74,14 +86,20 @@ io.on('connection', (socket) => {
 
   socket.on('join-question', (questionId) => {
     socket.join(`question-${questionId}`);
+    console.log(`User ${socket.id} joined question ${questionId}`);
   });
 
   socket.on('leave-question', (questionId) => {
     socket.leave(`question-${questionId}`);
+    console.log(`User ${socket.id} left question ${questionId}`);
   });
 
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+  socket.on('disconnect', (reason) => {
+    console.log('User disconnected:', socket.id, 'Reason:', reason);
+  });
+
+  socket.on('error', (error) => {
+    console.error('Socket error:', error);
   });
 });
 
