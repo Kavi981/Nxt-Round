@@ -17,7 +17,6 @@ interface Question {
   };
   votes: {
     upvotes: string[];
-    downvotes: string[];
   };
   category: string;
   createdAt: string;
@@ -220,7 +219,7 @@ const Home: React.FC = () => {
                       <div className="flex items-center space-x-1 text-green-600">
                         <TrendingUp className="w-4 h-4" />
                         <span className="text-sm font-medium">
-                          {question.votes && Array.isArray(question.votes.upvotes) ? question.votes.upvotes.length - question.votes.downvotes.length : 0}
+                          {question.votes && Array.isArray(question.votes.upvotes) ? question.votes.upvotes.length : 0}
                         </span>
                       </div>
                     </div>

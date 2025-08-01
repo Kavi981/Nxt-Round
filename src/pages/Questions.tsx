@@ -24,7 +24,6 @@ interface Question {
   difficulty: string;
   votes: {
     upvotes: string[];
-    downvotes: string[];
   };
   tags: string[];
   createdAt: string;

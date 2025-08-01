@@ -9,6 +9,7 @@ import Questions from './pages/Questions';
 import QuestionDetail from './pages/QuestionDetail';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
 import Profile from './pages/Profile';
 import AdminPanel from './pages/AdminPanel';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/questions/:id" element={<QuestionDetail />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route
                   path="/profile"
                   element={

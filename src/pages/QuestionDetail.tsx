@@ -34,7 +34,6 @@ interface Question {
   difficulty: string;
   votes: {
     upvotes: string[];
-    downvotes: string[];
   };
   tags: string[];
   createdAt: string;
@@ -50,7 +49,6 @@ interface Answer {
   };
   votes: {
     upvotes: string[];
-    downvotes: string[];
   };
   createdAt: string;
 }

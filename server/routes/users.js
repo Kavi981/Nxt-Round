@@ -89,13 +89,13 @@ router.get('/dashboard', auth, async (req, res) => {
     // Get total votes received on user's questions
     const userQuestions = await Question.find({ author: userId });
     const totalQuestionVotes = userQuestions.reduce((total, question) => {
-      return total + question.votes.upvotes.length + question.votes.downvotes.length;
+              return total + question.votes.upvotes.length;
     }, 0);
     
     // Get total votes received on user's answers
     const userAnswers = await Answer.find({ author: userId });
     const totalAnswerVotes = userAnswers.reduce((total, answer) => {
-      return total + answer.votes.upvotes.length + answer.votes.downvotes.length;
+              return total + answer.votes.upvotes.length;
     }, 0);
     
     // Get recent activity (last 5 questions, answers, comments)

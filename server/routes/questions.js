@@ -51,12 +51,9 @@ router.get('/top-voted', async (req, res) => {
     const questions = await Question.aggregate([
       {
         $addFields: {
-          voteScore: {
-            $subtract: [
-              { $size: '$votes.upvotes' },
-              { $size: '$votes.downvotes' }
-            ]
-          }
+                  voteScore: {
+          $size: '$votes.upvotes'
+        }
         }
       },
       { $sort: { voteScore: -1, createdAt: -1 } },
@@ -161,33 +158,22 @@ router.put('/:id', auth, async (req, res) => {
 // Vote on question
 router.post('/:id/vote', auth, async (req, res) => {
   try {
-    const { voteType } = req.body; // 'upvote' or 'downvote'
+    const { voteType } = req.body; // 'upvote' only
     const question = await Question.findById(req.params.id);
     
     if (!question) {
       return res.status(404).json({ message: 'Question not found' });
     }
 
-    const userId = req.user._id.toString();
-    const upvoteIndex = question.votes.upvotes.findIndex(id => id.toString() === userId);
-    const downvoteIndex = question.votes.downvotes.findIndex(id => id.toString() === userId);
+    const userId = req.user._id;
+    const upvoteIndex = question.votes.upvotes.findIndex(id => id.toString() === userId.toString());
 
     // If user is voting the same way, remove the vote (toggle)
     if (voteType === 'upvote' && upvoteIndex > -1) {
       question.votes.upvotes.splice(upvoteIndex, 1);
-    } else if (voteType === 'downvote' && downvoteIndex > -1) {
-      question.votes.downvotes.splice(downvoteIndex, 1);
     } else {
-      // Remove existing votes first
-      if (upvoteIndex > -1) question.votes.upvotes.splice(upvoteIndex, 1);
-      if (downvoteIndex > -1) question.votes.downvotes.splice(downvoteIndex, 1);
-
       // Add new vote
-      if (voteType === 'upvote') {
-        question.votes.upvotes.push(req.user._id);
-      } else if (voteType === 'downvote') {
-        question.votes.downvotes.push(req.user._id);
-      }
+      question.votes.upvotes.push(req.user._id);
     }
 
     await question.save();

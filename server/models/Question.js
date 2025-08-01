@@ -33,10 +33,6 @@ const questionSchema = new mongoose.Schema({
     upvotes: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
-    }],
-    downvotes: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
     }]
   },
   tags: [String]
@@ -45,7 +41,7 @@ const questionSchema = new mongoose.Schema({
 });
 
 questionSchema.virtual('voteScore').get(function() {
-  return this.votes.upvotes.length - this.votes.downvotes.length;
+  return this.votes.upvotes.length;
 });
 
 export default mongoose.model('Question', questionSchema);
