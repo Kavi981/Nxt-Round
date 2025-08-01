@@ -80,7 +80,7 @@ const Home: React.FC = () => {
       {/* Stats Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {stats && (
               <>
                 <div className="text-center">
@@ -103,13 +103,6 @@ const Home: React.FC = () => {
                   </div>
                   <div className="text-3xl font-bold text-gray-900 mb-2">{stats.questions}</div>
                   <div className="text-gray-600">Questions</div>
-                </div>
-                <div className="text-center">
-                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4`}>
-                    <TrendingUp className={`w-8 h-8 text-orange-600`} />
-                  </div>
-                  <div className="text-3xl font-bold text-gray-900 mb-2">85%</div>
-                  <div className="text-gray-600">Success Rate</div>
                 </div>
               </>
             )}
