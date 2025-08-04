@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import api from '../utils/api';
+import { useSocket } from './SocketContext';
 
 interface User {
   id: string;
@@ -65,15 +66,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isAuthenticated: false
   });
 
+  const { socket } = useSocket();
+
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
           const response = await api.get('/auth/me');
+          console.log('Auth check response:', response.data);
+          
+          // Transform the backend response to match frontend interface
+          const transformedUser = {
+            id: response.data.user._id || response.data.user.id,
+            name: response.data.user.name,
+            email: response.data.user.email,
+            role: response.data.user.role,
+            avatar: response.data.user.avatar
+          };
+          
+          console.log('Transformed user data from auth check:', transformedUser);
           dispatch({
             type: 'LOGIN_SUCCESS',
-            payload: { user: response.data.user, token }
+            payload: { user: transformedUser, token }
           });
         } catch (error) {
           localStorage.removeItem('token');
@@ -86,13 +101,56 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     checkAuth();
   }, []);
 
+  // Listen for profile updates from socket
+  useEffect(() => {
+    if (socket && state.user) {
+      socket.on('user-profile-updated', (data: { userId: string; name: string; avatar: string }) => {
+        console.log('Profile update received:', data);
+        console.log('Current user:', state.user);
+        console.log('User ID comparison:', { 
+          receivedUserId: data.userId, 
+          currentUserId: state.user?.id,
+          match: state.user?.id === data.userId 
+        });
+        
+        // Update the current user's data if it matches
+        if (state.user && state.user.id === data.userId) {
+          console.log('Updating user profile in AuthContext');
+          dispatch({
+            type: 'UPDATE_USER',
+            payload: {
+              ...state.user,
+              name: data.name,
+              avatar: data.avatar
+            }
+          });
+        } else {
+          console.log('User ID mismatch - not updating');
+        }
+      });
+
+      return () => {
+        socket.off('user-profile-updated');
+      };
+    }
+  }, [socket, state.user]);
+
   const login = async (email: string, password: string) => {
     try {
       const response = await api.post('/auth/login', { email, password });
       const { user, token } = response.data;
       
+      // Transform the backend response to match frontend interface
+      const transformedUser = {
+        id: user._id || user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar
+      };
+      
       localStorage.setItem('token', token);
-      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
+      dispatch({ type: 'LOGIN_SUCCESS', payload: { user: transformedUser, token } });
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Login failed');
     }
@@ -103,8 +161,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await api.post('/auth/register', { name, email, password });
       const { user, token } = response.data;
       
+      // Transform the backend response to match frontend interface
+      const transformedUser = {
+        id: user._id || user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar
+      };
+      
       localStorage.setItem('token', token);
-      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
+      dispatch({ type: 'LOGIN_SUCCESS', payload: { user: transformedUser, token } });
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Registration failed');
     }
@@ -117,9 +184,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateProfile = async (data: Partial<User>) => {
     try {
+      console.log('updateProfile called with data:', data);
       const response = await api.put('/users/profile', data);
-      dispatch({ type: 'UPDATE_USER', payload: response.data });
+      console.log('Profile update response:', response.data);
+      
+      // Transform the backend response to match frontend interface
+      const transformedUser = {
+        id: response.data._id || response.data.id,
+        name: response.data.name,
+        email: response.data.email,
+        role: response.data.role,
+        avatar: response.data.avatar
+      };
+      
+      console.log('Transformed user data:', transformedUser);
+      dispatch({ type: 'UPDATE_USER', payload: transformedUser });
+      console.log('User updated in AuthContext');
     } catch (error: any) {
+      console.error('Profile update error in AuthContext:', error);
       throw new Error(error.response?.data?.message || 'Profile update failed');
     }
   };

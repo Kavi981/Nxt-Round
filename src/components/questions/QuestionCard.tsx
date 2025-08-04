@@ -19,6 +19,7 @@ interface Question {
   difficulty: string;
   votes: {
     upvotes: string[];
+    downvotes: string[];
   };
   tags: string[];
   createdAt: string;
@@ -29,7 +30,7 @@ interface QuestionCardProps {
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
-  const voteScore = question.votes && Array.isArray(question.votes.upvotes) ? question.votes.upvotes.length : 0;
+  const voteScore = question.votes && question.votes.upvotes && Array.isArray(question.votes.upvotes) ? question.votes.upvotes.length : 0;
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {

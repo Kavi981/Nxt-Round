@@ -37,7 +37,13 @@ const io = new Server(server, {
   pingTimeout: 60000,
   pingInterval: 25000,
   transports: ['websocket', 'polling'],
-  allowEIO3: true
+  allowEIO3: true,
+  connectTimeout: 45000,
+  maxHttpBufferSize: 1e8,
+  allowRequest: (req, callback) => {
+    // Allow all requests for now, you can add authentication logic here
+    callback(null, true);
+  }
 });
 
 // Connect to MongoDB
@@ -83,6 +89,7 @@ app.use('/api/stats', statsRoutes);
 // Socket.io connection handling
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
+  console.log('Socket transport:', socket.conn.transport.name);
 
   socket.on('join-question', (questionId) => {
     socket.join(`question-${questionId}`);
@@ -100,6 +107,16 @@ io.on('connection', (socket) => {
 
   socket.on('error', (error) => {
     console.error('Socket error:', error);
+  });
+
+  // Handle transport upgrades
+  socket.on('upgrade', () => {
+    console.log(`Socket ${socket.id} upgraded to:`, socket.conn.transport.name);
+  });
+
+  // Handle transport errors
+  socket.conn.on('error', (error) => {
+    console.error(`Transport error for socket ${socket.id}:`, error);
   });
 });
 

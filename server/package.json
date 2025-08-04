@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "fix-votes": "node scripts/fixVoteData.js"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.5",

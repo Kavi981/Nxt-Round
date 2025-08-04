@@ -33,11 +33,29 @@ const questionSchema = new mongoose.Schema({
     upvotes: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
+    }],
+    downvotes: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     }]
   },
   tags: [String]
 }, {
   timestamps: true
+});
+
+// Initialize votes arrays if they don't exist
+questionSchema.pre('save', function(next) {
+  if (!this.votes) {
+    this.votes = { upvotes: [], downvotes: [] };
+  }
+  if (!this.votes.upvotes) {
+    this.votes.upvotes = [];
+  }
+  if (!this.votes.downvotes) {
+    this.votes.downvotes = [];
+  }
+  next();
 });
 
 questionSchema.virtual('voteScore').get(function() {

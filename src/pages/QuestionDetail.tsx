@@ -34,6 +34,7 @@ interface Question {
   difficulty: string;
   votes: {
     upvotes: string[];
+    downvotes: string[];
   };
   tags: string[];
   createdAt: string;
@@ -49,6 +50,7 @@ interface Answer {
   };
   votes: {
     upvotes: string[];
+    downvotes: string[];
   };
   createdAt: string;
 }
@@ -134,8 +136,9 @@ const QuestionDetail: React.FC = () => {
       // Check user's vote status
       if (user && question) {
         const userId = user.id;
-        if (question.votes && question.votes.upvotes && question.votes.upvotes.includes(userId)) {
-          setUserVote('upvote');
+        if (question.votes && question.votes.upvotes && Array.isArray(question.votes.upvotes)) {
+          const hasVoted = question.votes.upvotes.some((voteId: any) => voteId.toString() === userId);
+          setUserVote(hasVoted ? 'upvote' : null);
         } else {
           setUserVote(null);
         }
@@ -158,8 +161,9 @@ const QuestionDetail: React.FC = () => {
       
       // Update user vote state based on the response
       const userId = user?.id;
-      if (userId && response.data.votes && response.data.votes.upvotes && response.data.votes.upvotes.includes(userId)) {
-        setUserVote('upvote');
+      if (userId && response.data.votes && response.data.votes.upvotes && Array.isArray(response.data.votes.upvotes)) {
+        const hasVoted = response.data.votes.upvotes.some((voteId: any) => voteId.toString() === userId);
+        setUserVote(hasVoted ? 'upvote' : null);
       } else {
         setUserVote(null);
       }

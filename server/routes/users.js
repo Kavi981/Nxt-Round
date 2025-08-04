@@ -199,15 +199,32 @@ router.put('/:id/promote', adminAuth, async (req, res) => {
 router.put('/profile', auth, async (req, res) => {
   try {
     const { name, avatar } = req.body;
+    console.log('Profile update request:', { userId: req.user._id, name, avatar });
     
+    // Update the user profile
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { name, avatar },
       { new: true }
     ).select('-password');
 
+    console.log('User updated in database:', user);
+
+    // Emit socket event to notify all clients about the profile update
+    if (req.io) {
+      console.log('Emitting socket event for profile update');
+      req.io.emit('user-profile-updated', {
+        userId: req.user._id.toString(),
+        name: user.name,
+        avatar: user.avatar
+      });
+    } else {
+      console.log('No socket.io instance available');
+    }
+
     res.json(user);
   } catch (error) {
+    console.error('Profile update error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

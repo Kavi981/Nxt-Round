@@ -13,6 +13,7 @@ interface Answer {
   };
   votes: {
     upvotes: string[];
+    downvotes: string[];
   };
   createdAt: string;
 }
@@ -65,7 +66,10 @@ const AnswerSection: React.FC<AnswerSectionProps> = ({ questionId, answers, onAn
   const getUserVote = (answer: Answer) => {
     if (!user) return null;
     const userId = user.id;
-    if (answer.votes && Array.isArray(answer.votes.upvotes) && answer.votes.upvotes.includes(userId)) return 'upvote';
+    if (answer.votes && Array.isArray(answer.votes.upvotes)) {
+      const hasVoted = answer.votes.upvotes.some(voteId => voteId.toString() === userId);
+      return hasVoted ? 'upvote' : null;
+    }
     return null;
   };
 

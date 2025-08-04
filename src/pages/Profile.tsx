@@ -25,6 +25,8 @@ interface DashboardData {
 
 const Profile: React.FC = () => {
   const { user, updateProfile } = useAuth();
+  console.log('Profile component rendered with user:', user);
+  
   const [isEditing, setIsEditing] = useState(false);
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
@@ -44,6 +46,17 @@ const Profile: React.FC = () => {
       fetchDashboardData();
     }
   }, [isDashboardOpen]);
+
+  // Update form data when user data changes
+  useEffect(() => {
+    if (user) {
+      console.log('User data changed in Profile:', user);
+      setFormData({
+        name: user.name || '',
+        avatar: user.avatar || ''
+      });
+    }
+  }, [user]);
 
   const fetchDashboardData = async () => {
     setIsLoadingDashboard(true);
@@ -116,15 +129,19 @@ const Profile: React.FC = () => {
         avatarUrl = uploadResponse.data.url;
       }
 
+      console.log('Updating profile with data:', { ...formData, avatar: avatarUrl });
       await updateProfile({
         ...formData,
         avatar: avatarUrl
       });
+      
+      console.log('Profile updated successfully');
       setIsEditing(false);
       setSelectedFile(null);
       setPreviewUrl('');
       setSuccess('Profile updated successfully!');
     } catch (error: any) {
+      console.error('Profile update error:', error);
       setError(error.message);
     } finally {
       setIsSubmitting(false);
