@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
 import connectDB from './config/database.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
@@ -12,7 +14,27 @@ import answerRoutes from './routes/answers.js';
 import commentRoutes from './routes/comments.js';
 import statsRoutes from './routes/stats.js';
 
-dotenv.config();
+// Check if .env file exists and load environment variables
+const envPath = join(process.cwd(), '.env');
+console.log('🔍 Looking for .env file at:', envPath);
+console.log('📁 Current working directory:', process.cwd());
+
+if (existsSync(envPath)) {
+  console.log('✅ .env file found');
+  dotenv.config({ path: envPath });
+} else {
+  console.log('❌ .env file not found at:', envPath);
+  // Try loading from default location
+  dotenv.config();
+}
+
+// Debug: Log environment variables (remove in production)
+console.log('🔧 Environment Variables Check:');
+console.log('- EMAIL_USER:', process.env.EMAIL_USER ? 'Set' : 'Not set');
+console.log('- EMAIL_PASS:', process.env.EMAIL_PASS ? 'Set' : 'Not set');
+console.log('- FROM_EMAIL:', process.env.FROM_EMAIL ? 'Set' : 'Not set');
+console.log('- NODE_ENV:', process.env.NODE_ENV);
+console.log('- MONGODB_URI:', process.env.MONGODB_URI ? 'Set' : 'Not set');
 
 const app = express();
 const server = createServer(app);
@@ -123,6 +145,8 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 5003;
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📧 Email configured: ${process.env.EMAIL_USER ? 'Yes' : 'No'}`);
+  console.log(`🔗 MongoDB connected: ${process.env.MONGODB_URI ? 'Yes' : 'No'}`);
 });

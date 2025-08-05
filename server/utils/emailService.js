@@ -4,6 +4,11 @@ import nodemailer from 'nodemailer';
 let transporter = null;
 
 const createTransporter = () => {
+  console.log('🔧 Email Service Configuration:');
+  console.log('- EMAIL_USER:', process.env.EMAIL_USER ? 'Set' : 'Not set');
+  console.log('- EMAIL_PASS:', process.env.EMAIL_PASS ? 'Set' : 'Not set');
+  console.log('- FROM_EMAIL:', process.env.FROM_EMAIL ? 'Set' : 'Not set');
+  
   // Use Gmail
   if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
     if (!transporter) {
