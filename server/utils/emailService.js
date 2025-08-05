@@ -1,20 +1,10 @@
 import nodemailer from 'nodemailer';
-import sgMail from '@sendgrid/mail';
 
 // Create transporter function that initializes when needed
 let transporter = null;
-let sendGridConfigured = false;
 
 const createTransporter = () => {
-  // Try SendGrid first if API key is available
-  if (process.env.SENDGRID_API_KEY) {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    sendGridConfigured = true;
-    console.log('SendGrid configured successfully');
-    return 'sendgrid';
-  }
-  
-  // Fallback to Gmail
+  // Use Gmail
   if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
     if (!transporter) {
       // Try multiple configurations for better reliability
@@ -79,6 +69,12 @@ export const generateOTP = () => {
 
 // Send OTP email
 export const sendOTPEmail = async (email, otp) => {
+  console.log('Attempting to send OTP email to:', email);
+  console.log('Environment variables check:');
+  console.log('- EMAIL_USER:', process.env.EMAIL_USER ? 'Set' : 'Not set');
+  console.log('- EMAIL_PASS:', process.env.EMAIL_PASS ? 'Set' : 'Not set');
+  console.log('- FROM_EMAIL:', process.env.FROM_EMAIL ? 'Set' : 'Not set');
+  
   const emailService = createTransporter();
   
   if (!emailService) {
@@ -108,31 +104,16 @@ export const sendOTPEmail = async (email, otp) => {
   `;
 
   try {
-    if (sendGridConfigured) {
-      // Use SendGrid
-      const msg = {
-        to: email,
-        from: process.env.EMAIL_USER || 'noreply@nxtround.tech',
-        subject: 'Password Reset OTP - NxtRound',
-        html: emailContent,
-      };
-      
-      await sgMail.send(msg);
-      console.log('OTP email sent successfully via SendGrid to:', email);
-      return true;
-    } else {
-      // Use Gmail
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: 'Password Reset OTP - NxtRound',
-        html: emailContent
-      };
+    const mailOptions = {
+      from: process.env.FROM_EMAIL || process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset OTP - NxtRound',
+      html: emailContent
+    };
 
-      await emailService.sendMail(mailOptions);
-      console.log('OTP email sent successfully via Gmail to:', email);
-      return true;
-    }
+    await emailService.sendMail(mailOptions);
+    console.log('OTP email sent successfully via Gmail to:', email);
+    return true;
   } catch (error) {
     console.error('Email sending error:', error.message);
     return false;
@@ -164,31 +145,16 @@ export const sendPasswordResetSuccessEmail = async (email) => {
   `;
 
   try {
-    if (sendGridConfigured) {
-      // Use SendGrid
-      const msg = {
-        to: email,
-        from: process.env.EMAIL_USER || 'noreply@nxtround.tech',
-        subject: 'Password Reset Successful - NxtRound',
-        html: emailContent,
-      };
-      
-      await sgMail.send(msg);
-      console.log('Password reset success email sent via SendGrid to:', email);
-      return true;
-    } else {
-      // Use Gmail
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: 'Password Reset Successful - NxtRound',
-        html: emailContent
-      };
+    const mailOptions = {
+      from: process.env.FROM_EMAIL || process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset Successful - NxtRound',
+      html: emailContent
+    };
 
-      await emailService.sendMail(mailOptions);
-      console.log('Password reset success email sent via Gmail to:', email);
-      return true;
-    }
+    await emailService.sendMail(mailOptions);
+    console.log('Password reset success email sent via Gmail to:', email);
+    return true;
   } catch (error) {
     console.error('Email sending error:', error.message);
     return false;

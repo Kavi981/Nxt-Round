@@ -4,6 +4,7 @@ import { SocketProvider } from './context/SocketContext';
 import { ProfileUpdateProvider } from './context/ProfileUpdateContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import NetworkStatus from './components/layout/NetworkStatus';
 import Home from './pages/Home';
 import Companies from './pages/Companies';
 import Questions from './pages/Questions';
@@ -23,6 +24,7 @@ function App() {
         <ProfileUpdateProvider>
           <Router>
             <div className="min-h-screen bg-gray-50 flex flex-col">
+              <NetworkStatus />
               <Navbar />
               <main className="flex-1">
                 <Routes>

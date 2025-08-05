@@ -107,14 +107,23 @@ router.post('/forgot-password', async (req, res) => {
     const emailSent = await sendOTPEmail(email, otp);
     
     if (!emailSent) {
-      // For development/testing, return the OTP in the response
-      console.log('Email failed, returning OTP in response for testing:', otp);
-      return res.status(200).json({ 
-        message: 'Email service unavailable. OTP returned for testing.',
-        otp: otp, // Only for development
-        resetToken,
-        note: 'In production, this OTP would be sent via email only'
-      });
+      console.error('Email sending failed for:', email);
+      
+      // In production, don't return the OTP for security
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(500).json({ 
+          message: 'Email service temporarily unavailable. Please try again later.'
+        });
+      } else {
+        // For development/testing, return the OTP in the response
+        console.log('Email failed, returning OTP in response for testing:', otp);
+        return res.status(200).json({ 
+          message: 'Email service unavailable. OTP returned for testing.',
+          otp: otp, // Only for development
+          resetToken,
+          note: 'In production, this OTP would be sent via email only'
+        });
+      }
     }
 
     res.json({ 
@@ -162,6 +171,25 @@ router.post('/reset-password', async (req, res) => {
   } catch (error) {
     console.error('Reset password error:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Test email configuration (development only)
+router.get('/test-email-config', async (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(404).json({ message: 'Not available in production' });
+  }
+  
+  try {
+    const config = {
+      gmailConfigured: !!(process.env.EMAIL_USER && process.env.EMAIL_PASS),
+      fromEmail: process.env.FROM_EMAIL || process.env.EMAIL_USER,
+      nodeEnv: process.env.NODE_ENV
+    };
+    
+    res.json(config);
+  } catch (error) {
+    res.status(500).json({ message: 'Error checking email config' });
   }
 });
 

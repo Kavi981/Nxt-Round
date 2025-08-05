@@ -8,6 +8,9 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000, // 10 second timeout
+  retry: 3, // Retry failed requests
+  retryDelay: 1000, // Wait 1 second between retries
 });
 
 // Request interceptor to add auth token
@@ -17,22 +20,44 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
+    // Add timestamp to prevent caching issues
+    if (config.method === 'get') {
+      config.params = { ...config.params, _t: Date.now() };
+    }
+    
     return config;
   },
   (error) => {
+    console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
 
-// Response interceptor to handle auth errors
+// Response interceptor to handle auth errors and network issues
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    console.error('API Error:', error);
+    
+    // Handle network errors
+    if (error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
+      console.error('Network error detected. Please check your connection.');
+      // You could show a user-friendly notification here
+    }
+    
+    // Handle timeout errors
+    if (error.code === 'ECONNABORTED') {
+      console.error('Request timeout. Server might be down.');
+    }
+    
+    // Handle auth errors
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
     }
+    
     return Promise.reject(error);
   }
 );
