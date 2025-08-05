@@ -22,6 +22,7 @@ lerna-debug.log*
 
 # Documentation and setup files
 EMAIL_SETUP.md
+ENVIRONMENT_SETUP.md
 
 # NPM configuration
 .npmrc

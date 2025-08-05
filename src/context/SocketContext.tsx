@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useRef } from 'r
 import { io, Socket } from 'socket.io-client';
 
 // Use environment variable for API URL, fallback to localhost for development
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5003';
+const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5003';
 
 interface SocketContextType {
   socket: Socket | null;
@@ -17,7 +17,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [isConnected, setIsConnected] = useState(false);
   const [connectError, setConnectError] = useState<string | null>(null);
   const reconnectAttempts = useRef(0);
-  const maxReconnectAttempts = 5;
+  const maxReconnectAttempts = 3; // Reduced from 5
   const reconnectTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -27,20 +27,19 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         socket.close();
       }
 
+      console.log('Attempting to connect to:', API_BASE_URL);
+
       const newSocket = io(API_BASE_URL, {
         transports: ['websocket', 'polling'],
         withCredentials: true,
-        timeout: 20000, // 20 second timeout
+        timeout: 10000, // Reduced timeout
         forceNew: true,
-        reconnection: true,
-        reconnectionAttempts: maxReconnectAttempts,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
+        reconnection: false, // Disable automatic reconnection
         autoConnect: true
       });
 
       newSocket.on('connect', () => {
-        console.log('Socket connected:', newSocket.id);
+        console.log('Socket connected successfully:', newSocket.id);
         setIsConnected(true);
         setConnectError(null);
         reconnectAttempts.current = 0;
@@ -50,20 +49,21 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         console.log('Socket disconnected:', reason);
         setIsConnected(false);
         
-        // Only attempt reconnection for certain disconnect reasons
+        // Don't attempt reconnection for intentional disconnects
         if (reason === 'io server disconnect' || reason === 'io client disconnect') {
-          // Server or client initiated disconnect, don't reconnect
           return;
         }
         
-        // For other reasons (network issues, etc.), attempt reconnection
+        // For network issues, attempt manual reconnection
         if (reconnectAttempts.current < maxReconnectAttempts) {
           reconnectAttempts.current++;
-          console.log(`Attempting reconnection ${reconnectAttempts.current}/${maxReconnectAttempts}`);
+          console.log(`Manual reconnection attempt ${reconnectAttempts.current}/${maxReconnectAttempts}`);
           
           reconnectTimeout.current = setTimeout(() => {
             connectSocket();
-          }, Math.min(1000 * Math.pow(2, reconnectAttempts.current), 5000));
+          }, 2000); // Fixed 2-second delay
+        } else {
+          setConnectError('Failed to connect after multiple attempts');
         }
       });
 
@@ -72,38 +72,36 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setIsConnected(false);
         setConnectError(error.message);
         
-        // Attempt reconnection on connection errors
+        // Only attempt reconnection for network errors
+        if (error.message.includes('Invalid namespace') || error.message.includes('xhr poll error')) {
+          console.log('Namespace or transport error, not attempting reconnection');
+          return;
+        }
+        
         if (reconnectAttempts.current < maxReconnectAttempts) {
           reconnectAttempts.current++;
           console.log(`Connection error, attempting reconnection ${reconnectAttempts.current}/${maxReconnectAttempts}`);
           
           reconnectTimeout.current = setTimeout(() => {
             connectSocket();
-          }, Math.min(1000 * Math.pow(2, reconnectAttempts.current), 5000));
+          }, 2000);
         }
       });
 
-      newSocket.on('reconnect', (attemptNumber) => {
-        console.log(`Socket reconnected after ${attemptNumber} attempts`);
-        setIsConnected(true);
-        setConnectError(null);
-        reconnectAttempts.current = 0;
-      });
-
-      newSocket.on('reconnect_error', (error) => {
-        console.error('Socket reconnection error:', error);
-        setConnectError(`Reconnection failed: ${error.message}`);
-      });
-
-      newSocket.on('reconnect_failed', () => {
-        console.error('Socket reconnection failed after all attempts');
-        setConnectError('Failed to reconnect after multiple attempts');
+      newSocket.on('error', (error) => {
+        console.error('Socket error:', error);
+        setConnectError(`Socket error: ${error.message}`);
       });
 
       setSocket(newSocket);
     };
 
-    connectSocket();
+    // Only connect if we have a valid API URL
+    if (API_BASE_URL && API_BASE_URL !== 'http://localhost:5003') {
+      connectSocket();
+    } else {
+      console.log('Socket connection disabled - using localhost or invalid URL');
+    }
 
     return () => {
       if (reconnectTimeout.current) {

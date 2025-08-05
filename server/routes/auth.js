@@ -104,24 +104,42 @@ router.post('/forgot-password', async (req, res) => {
     await user.save();
 
     // Send OTP email
-    const emailSent = await sendOTPEmail(email, otp);
-    
-    if (!emailSent) {
-      console.error('Email sending failed for:', email);
+    try {
+      const emailSent = await sendOTPEmail(email, otp);
       
-      // In production, don't return the OTP for security
-      if (process.env.NODE_ENV === 'production') {
-        return res.status(500).json({ 
-          message: 'Email service temporarily unavailable. Please try again later.'
+      if (!emailSent) {
+        console.error('Email sending failed for:', email);
+        
+        // In production, don't return the OTP for security
+        if (process.env.NODE_ENV === 'production') {
+          return res.status(500).json({ 
+            message: 'Email service temporarily unavailable. Please try again later.'
+          });
+        } else {
+          // For development/testing, return the OTP in the response
+          console.log('Email failed, returning OTP in response for testing:', otp);
+          return res.status(200).json({ 
+            message: 'Email service unavailable. OTP returned for testing.',
+            otp: otp, // Only for development
+            resetToken,
+            note: 'In production, this OTP would be sent via email only'
+          });
+        }
+      }
+    } catch (emailError) {
+      console.error('Email service error:', emailError);
+      
+      // In development, return OTP for testing
+      if (process.env.NODE_ENV !== 'production') {
+        return res.status(200).json({ 
+          message: 'Email service error, OTP returned for testing.',
+          otp: otp,
+          resetToken,
+          error: emailError.message
         });
       } else {
-        // For development/testing, return the OTP in the response
-        console.log('Email failed, returning OTP in response for testing:', otp);
-        return res.status(200).json({ 
-          message: 'Email service unavailable. OTP returned for testing.',
-          otp: otp, // Only for development
-          resetToken,
-          note: 'In production, this OTP would be sent via email only'
+        return res.status(500).json({ 
+          message: 'Email service error. Please try again later.'
         });
       }
     }
