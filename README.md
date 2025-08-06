@@ -138,10 +138,6 @@ Nxt_Round/
    CLOUDINARY_API_KEY=your_cloudinary_api_key
    CLOUDINARY_API_SECRET=your_cloudinary_api_secret
    
-   # Email (SendGrid)
-   SENDGRID_API_KEY=your_sendgrid_api_key
-   FROM_EMAIL=your_verified_sender_email
-   
    # CORS
    CORS_ORIGIN=http://localhost:5173
    ```
