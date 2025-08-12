@@ -14,7 +14,7 @@ A comprehensive interview preparation platform where job seekers can share real 
 - **Question & Answer System**: Share and discover interview questions by company and category
 - **Company Profiles**: Browse companies and their interview questions
 - **Real-time Collaboration**: Live updates with Socket.io for dynamic interactions
-- **User Authentication**: Secure login/register with Google OAuth support
+- **User Authentication**: Secure JWT-based login/register system
 - **Admin Panel**: Comprehensive admin interface for platform management
 - **Search & Filter**: Advanced search capabilities across questions and companies
 
@@ -30,7 +30,7 @@ A comprehensive interview preparation platform where job seekers can share real 
 - **RESTful API**: Well-structured Express.js backend
 - **MongoDB**: Scalable NoSQL database with Mongoose ODM
 - **File Upload**: Image upload support with Cloudinary
-- **Email Integration**: Automated email notifications
+- **Email Integration**: Automated email notifications using Nodemailer
 - **Security**: JWT authentication, bcrypt password hashing
 
 ## 🚀 Live Demo
@@ -56,7 +56,6 @@ Visit the live application: [https://nxtround.tech](https://nxtround.tech)
 - **Mongoose** - MongoDB object modeling
 - **Socket.io** - Real-time bidirectional communication
 - **JWT** - JSON Web Token authentication
-- **Passport.js** - Authentication middleware
 - **bcryptjs** - Password hashing
 - **Multer** - File upload handling
 - **Cloudinary** - Cloud image management
@@ -129,18 +128,15 @@ Nxt_Round/
    # JWT Secret
    JWT_SECRET=your_jwt_secret_key
    
-   # Google OAuth
-   GOOGLE_CLIENT_ID=your_google_client_id
-   GOOGLE_CLIENT_SECRET=your_google_client_secret
-   
    # Cloudinary
    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
    CLOUDINARY_API_KEY=your_cloudinary_api_key
    CLOUDINARY_API_SECRET=your_cloudinary_api_secret
    
-   # Email (SendGrid)
-   SENDGRID_API_KEY=your_sendgrid_api_key
-   FROM_EMAIL=your_verified_sender_email
+   # Email (Nodemailer with Gmail)
+   EMAIL_USER=your_gmail_address
+   EMAIL_PASS=your_gmail_app_password
+   FROM_EMAIL=your_gmail_address
    
    # CORS
    CORS_ORIGIN=http://localhost:5173
@@ -163,35 +159,6 @@ Nxt_Round/
    - Frontend: http://localhost:5173
    - Backend API: http://localhost:5000
 
-## 📚 API Documentation
-
-### Authentication Endpoints
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/forgot-password` - Password reset
-- `GET /api/auth/google` - Google OAuth
-- `POST /api/auth/logout` - User logout
-
-### Questions Endpoints
-- `GET /api/questions` - Get all questions
-- `POST /api/questions` - Create new question
-- `GET /api/questions/:id` - Get specific question
-- `PUT /api/questions/:id` - Update question
-- `DELETE /api/questions/:id` - Delete question
-- `GET /api/questions/top-voted` - Get top voted questions
-
-### Companies Endpoints
-- `GET /api/companies` - Get all companies
-- `POST /api/companies` - Create new company
-- `GET /api/companies/:id` - Get specific company
-- `PUT /api/companies/:id` - Update company
-
-### Answers & Comments
-- `GET /api/answers` - Get answers for a question
-- `POST /api/answers` - Create new answer
-- `GET /api/comments` - Get comments
-- `POST /api/comments` - Create new comment
-
 ## 🚀 Deployment
 
 ### Frontend Deployment (Vercel)
@@ -210,36 +177,11 @@ Nxt_Round/
 NODE_ENV=production
 MONGODB_URI=your_production_mongodb_uri
 JWT_SECRET=your_production_jwt_secret
+EMAIL_USER=your_production_gmail_address
+EMAIL_PASS=your_production_gmail_app_password
+FROM_EMAIL=your_production_gmail_address
 CORS_ORIGIN=https://yourdomain.com
 ```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-- Follow TypeScript best practices
-- Use ESLint for code linting
-- Write meaningful commit messages
-- Test your changes thoroughly
-- Update documentation as needed
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [React](https://reactjs.org/) - Frontend framework
-- [Express.js](https://expressjs.com/) - Backend framework
-- [MongoDB](https://www.mongodb.com/) - Database
-- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
-- [Socket.io](https://socket.io/) - Real-time communication
-- [Cloudinary](https://cloudinary.com/) - Image management
 
 ## 📞 Support
 
